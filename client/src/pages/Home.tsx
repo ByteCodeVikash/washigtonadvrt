@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react';
-import { motion, useScroll, useTransform, useSpring } from 'framer-motion';
-import { ArrowRight, Globe, Layers, Zap } from 'lucide-react';
+import { motion, useScroll, useTransform, useSpring, useInView } from 'framer-motion';
+import { ArrowRight, Globe, Layers, Zap, Shield, TrendingUp, Landmark, Award } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -23,10 +23,28 @@ import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 
+function SectionWrapper({ children, className = "", id = "" }: { children: React.ReactNode, className?: string, id?: string }) {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: "-100px" });
+
+  return (
+    <motion.section
+      ref={ref}
+      id={id}
+      initial={{ opacity: 0, y: 20 }}
+      animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+      transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+      className={className}
+    >
+      {children}
+    </motion.section>
+  );
+}
+
 export default function Home() {
-  const { scrollY } = useScroll();
-  const heroOpacity = useTransform(scrollY, [0, 500], [1, 0]);
-  const heroY = useTransform(scrollY, [0, 500], [0, 200]);
+  const { scrollYProgress } = useScroll();
+  const scale = useTransform(scrollYProgress, [0, 0.1], [1, 0.95]);
+  const opacity = useTransform(scrollYProgress, [0, 0.1], [1, 0]);
   
   const createInquiry = useCreateInquiry();
   const { toast } = useToast();
@@ -43,287 +61,370 @@ export default function Home() {
   const onSubmit = (data: z.infer<typeof insertInquirySchema>) => {
     createInquiry.mutate(data, {
       onSuccess: () => {
+        toast({
+          title: "Inquiry Sent",
+          description: "We will get back to you shortly.",
+        });
         form.reset();
       },
     });
   };
 
   return (
-    <div className="min-h-screen relative text-white selection:bg-primary selection:text-white">
+    <div className="min-h-screen relative text-white selection:bg-primary selection:text-white bg-[#020617]">
       <Scene3D />
       <Navigation />
 
       <main className="relative z-10">
         {/* HERO SECTION */}
-        <section className="h-screen flex items-center justify-center px-6 relative overflow-hidden">
+        <section className="h-[110vh] flex items-center justify-center px-6 relative overflow-hidden">
           <motion.div 
-            style={{ opacity: heroOpacity, y: heroY }}
+            style={{ opacity, scale }}
             className="text-center max-w-5xl mx-auto"
           >
             <motion.div
-              initial={{ opacity: 0, y: 50 }}
+              initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1, delay: 0.2 }}
             >
-              <h2 className="text-sm md:text-base font-bold tracking-[0.3em] uppercase text-primary mb-6">
-                Digital Marketing Agency
+              <h2 className="text-sm md:text-base font-bold tracking-[0.4em] uppercase text-primary mb-8 drop-shadow-sm">
+                Washington Advert • Strategic Authority
               </h2>
             </motion.div>
             
             <motion.h1
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 1, delay: 0.4, type: "spring" }}
-              className="font-display text-5xl md:text-7xl lg:text-9xl font-semibold tracking-tighter leading-[0.9] mb-8 bg-clip-text text-transparent bg-gradient-to-b from-white to-white/60"
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1.2, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
+              className="font-display text-6xl md:text-8xl lg:text-[10rem] font-semibold tracking-tighter leading-[0.85] mb-10 bg-clip-text text-transparent bg-gradient-to-b from-white via-white to-white/30"
             >
-              PREMIUM
+              CRAFTING
               <br />
-              <span className="italic font-light">DIGITAL</span>
+              <span className="italic font-light opacity-90">LEGACY</span>
               <br />
-              EXPERIENCES
+              GROWTH
             </motion.h1>
             
-            <motion.p
+            <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 1, delay: 0.8 }}
-              className="text-lg md:text-xl text-white/60 max-w-2xl mx-auto font-light leading-relaxed"
+              className="space-y-6"
             >
-              We craft cinematic web journeys for brands that dare to be different.
-              Combining strategy, design, and motion into one seamless narrative.
-            </motion.p>
+              <p className="text-lg md:text-2xl text-white/70 max-w-3xl mx-auto font-light leading-relaxed">
+                We bridge the gap between policy-driven authority and digital-first innovation. 
+                Based in the heart of the nation's capital, we engineer market-leading narratives 
+                for brands that demand monumental scale.
+              </p>
+            </motion.div>
             
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1, delay: 1 }}
-              className="mt-12"
+              className="mt-16 flex flex-col md:flex-row items-center justify-center gap-8"
             >
-              <a href="#about" className="group inline-flex items-center gap-2 text-sm uppercase tracking-widest hover:text-primary transition-colors">
-                Discover More
-                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              <a href="#about" className="group flex items-center gap-3 text-sm uppercase tracking-[0.2em] font-semibold hover:text-primary transition-all duration-500">
+                The DC Edge
+                <ArrowRight className="w-5 h-5 group-hover:translate-x-2 transition-transform duration-500" />
               </a>
+              <div className="h-px w-12 bg-white/20 hidden md:block" />
+              <span className="text-white/40 text-xs uppercase tracking-[0.3em]">Est. 2025 • Washington D.C.</span>
             </motion.div>
           </motion.div>
         </section>
 
+        {/* INTRODUCTION BLOCK */}
+        <SectionWrapper className="py-24 px-6 border-y border-white/5 bg-white/[0.02]">
+          <div className="container mx-auto max-w-4xl text-center">
+            <Landmark className="w-12 h-12 text-primary/40 mx-auto mb-8" />
+            <h3 className="font-display text-3xl md:text-4xl mb-6 tracking-tight">Monumental Perspective. Digital Precision.</h3>
+            <p className="text-white/60 text-lg font-light leading-relaxed">
+              At Washington Advert, we understand that true influence requires both a panoramic view of the landscape and a surgical focus on detail. Our strategies are built on the same foundations of stability and trust that define our home city.
+            </p>
+          </div>
+        </SectionWrapper>
+
         {/* ABOUT SECTION */}
-        <section id="about" className="py-32 px-6 relative">
+        <SectionWrapper id="about" className="py-48 px-6 relative overflow-hidden">
           <div className="container mx-auto">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
-              <div>
-                <motion.h2
-                  initial={{ opacity: 0, x: -50 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true, margin: "-100px" }}
-                  transition={{ duration: 0.8 }}
-                  className="font-display text-4xl md:text-6xl mb-8 leading-tight"
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-24 items-center">
+              <div className="relative">
+                <motion.div 
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 1 }}
+                  className="aspect-[4/5] rounded-2xl overflow-hidden bg-white/5 border border-white/10"
                 >
-                  We don't just build websites.<br/>
-                  <span className="text-primary italic">We build worlds.</span>
-                </motion.h2>
+                  <img 
+                    src="https://images.unsplash.com/photo-1501466044931-62695aada8e9?w=1200&q=80" 
+                    alt="Washington DC Architectural Detail"
+                    className="w-full h-full object-cover opacity-60 grayscale hover:grayscale-0 transition-all duration-1000"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#020617] via-transparent to-transparent" />
+                </motion.div>
+                <div className="absolute -bottom-10 -right-10 w-64 h-64 bg-primary/10 blur-[100px] rounded-full" />
               </div>
-              <div>
-                <motion.p
-                  initial={{ opacity: 0, x: 50 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true, margin: "-100px" }}
-                  transition={{ duration: 0.8, delay: 0.2 }}
-                  className="text-lg text-white/70 leading-relaxed font-light mb-8"
-                >
-                  In a crowded digital landscape, standing out requires more than just good design. It requires a story. A feeling. An experience that resonates deeply with your audience.
-                </motion.p>
-                <motion.p
-                  initial={{ opacity: 0, x: 50 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true, margin: "-100px" }}
-                  transition={{ duration: 0.8, delay: 0.4 }}
-                  className="text-lg text-white/70 leading-relaxed font-light"
-                >
-                  Washington Advert bridges the gap between art and technology. We use cutting-edge 3D web technologies to create immersive environments that captivate users and drive conversion.
-                </motion.p>
+              <div className="relative z-10">
+                <span className="text-primary text-sm font-bold uppercase tracking-[0.3em] mb-6 block">Our Foundation</span>
+                <h2 className="font-display text-5xl md:text-7xl mb-10 leading-[0.9] tracking-tighter">
+                  Authority<br/>
+                  <span className="text-primary italic font-light">By Design.</span>
+                </h2>
+                <div className="space-y-8 text-xl text-white/70 leading-relaxed font-light">
+                  <p>
+                    In the capital of the free world, representation is everything. We apply this standard of excellence to every pixel, ensuring your brand carries the weight of authority and the clarity of leadership.
+                  </p>
+                  <p>
+                    Our approach integrates "Washington-level" strategic planning with high-performance motion design, creating a digital presence that doesn't just participate in the market—it leads it.
+                  </p>
+                </div>
+                <div className="grid grid-cols-2 gap-8 mt-16">
+                  <div>
+                    <h4 className="font-display text-3xl text-white mb-2">98%</h4>
+                    <p className="text-xs uppercase tracking-widest text-white/40">Client Retention</p>
+                  </div>
+                  <div>
+                    <h4 className="font-display text-3xl text-white mb-2">12+</h4>
+                    <p className="text-xs uppercase tracking-widest text-white/40">Policy Verticals</p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
-        </section>
+        </SectionWrapper>
 
         {/* SERVICES SECTION */}
-        <section id="services" className="py-32 px-6 bg-black/20 backdrop-blur-sm relative">
+        <SectionWrapper id="services" className="py-48 px-6 bg-white/[0.01] backdrop-blur-sm relative border-y border-white/5">
           <div className="container mx-auto">
-            <motion.div
-              initial={{ opacity: 0, y: 50 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="text-center mb-20"
-            >
-              <span className="text-primary text-sm font-bold uppercase tracking-widest mb-2 block">Our Expertise</span>
-              <h2 className="font-display text-4xl md:text-6xl">Designed for Impact</h2>
-            </motion.div>
+            <div className="flex flex-col md:flex-row md:items-end justify-between mb-24 gap-8">
+              <div className="max-w-2xl">
+                <span className="text-primary text-sm font-bold uppercase tracking-[0.3em] mb-4 block">Strategic Capabilities</span>
+                <h2 className="font-display text-5xl md:text-7xl tracking-tighter">Engineered for Scale</h2>
+              </div>
+              <p className="text-white/40 max-w-xs text-sm uppercase tracking-widest leading-loose">
+                Specialized in high-authority sectors requiring trust and stability.
+              </p>
+            </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-1px bg-white/10 border border-white/10 rounded-2xl overflow-hidden">
               {[
                 {
-                  icon: Globe,
-                  title: "Web Experience",
-                  desc: "Immersive 3D websites, landing pages, and web applications that push the boundaries of the browser."
+                  icon: Shield,
+                  title: "Authoritative Identity",
+                  desc: "We build visual systems that command respect and establish instant trust within premium market segments.",
+                  micro: "Policy-aligned branding and visual governance."
                 },
                 {
-                  icon: Layers,
-                  title: "Brand Strategy",
-                  desc: "Comprehensive digital strategies that align your visual identity with your business goals."
+                  icon: TrendingUp,
+                  title: "Strategic Growth",
+                  desc: "Data-driven performance marketing designed for long-term scalability and consistent market influence.",
+                  micro: "High-level analytics and conversion architecture."
                 },
                 {
-                  icon: Zap,
-                  title: "Performance",
-                  desc: "Optimized for speed and conversion without sacrificing visual fidelity or interactivity."
+                  icon: Landmark,
+                  title: "Public Relations 2.0",
+                  desc: "Digital-first narrative control and perception management for brands operating at a national scale.",
+                  micro: "Digital lobbying and influence mapping."
                 }
               ].map((service, index) => (
-                <motion.div
+                <div
                   key={index}
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: index * 0.2, duration: 0.6 }}
-                  className="group p-8 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 hover:border-primary/50 transition-all duration-300 backdrop-blur-md"
+                  className="group p-12 bg-[#020617] hover:bg-white/[0.03] transition-all duration-700"
                 >
-                  <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center mb-6 text-primary group-hover:scale-110 transition-transform duration-300">
-                    <service.icon className="w-6 h-6" />
+                  <div className="w-16 h-16 rounded-xl bg-primary/10 flex items-center justify-center mb-10 text-primary group-hover:bg-primary group-hover:text-white transition-all duration-700">
+                    <service.icon className="w-8 h-8" />
                   </div>
-                  <h3 className="text-xl font-bold mb-4 font-display tracking-wide">{service.title}</h3>
-                  <p className="text-white/60 leading-relaxed font-light">{service.desc}</p>
-                </motion.div>
+                  <h3 className="text-2xl font-bold mb-6 font-display tracking-tight">{service.title}</h3>
+                  <p className="text-white/60 leading-relaxed font-light mb-8 text-lg">{service.desc}</p>
+                  <p className="text-primary/60 text-xs uppercase tracking-widest font-bold">{service.micro}</p>
+                </div>
               ))}
             </div>
           </div>
-        </section>
+        </SectionWrapper>
 
-        {/* WORK / CLIENTS (Simplified for this demo) */}
-        <section id="work" className="py-32 px-6">
-          <div className="container mx-auto text-center">
-            <motion.h2
-              initial={{ opacity: 0, scale: 0.95 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              className="font-display text-4xl md:text-5xl mb-16"
-            >
-              Selected Works
-            </motion.h2>
+        {/* STRATEGY BLOCK */}
+        <SectionWrapper className="py-48 px-6 border-b border-white/5">
+          <div className="container mx-auto">
+            <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-24 items-center">
+               <div className="order-2 md:order-1">
+                 <h2 className="font-display text-4xl md:text-5xl mb-8 tracking-tight">The DC Strategy Protocol</h2>
+                 <ul className="space-y-12">
+                   {[
+                     { step: "01", title: "Environmental Audit", desc: "Analyzing regulatory and market shifts to find your unique leverage point." },
+                     { step: "02", title: "Narrative Architecture", desc: "Developing a singular, powerful story that resonates across all touchpoints." },
+                     { step: "03", title: "Surgical Deployment", desc: "Executing with precision to ensure maximum impact and measurable results." }
+                   ].map((item, i) => (
+                     <li key={i} className="flex gap-8">
+                       <span className="font-display text-primary text-xl font-bold">{item.step}</span>
+                       <div>
+                         <h4 className="text-lg font-bold mb-2 uppercase tracking-widest">{item.title}</h4>
+                         <p className="text-white/50 font-light">{item.desc}</p>
+                       </div>
+                     </li>
+                   ))}
+                 </ul>
+               </div>
+               <div className="order-1 md:order-2 aspect-square rounded-full border border-primary/20 flex items-center justify-center relative">
+                 <div className="absolute inset-0 bg-primary/5 blur-[120px] rounded-full" />
+                 <Landmark className="w-32 h-32 text-primary/20 animate-pulse" />
+                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[1px] bg-white/10 rotate-45" />
+                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[1px] bg-white/10 -rotate-45" />
+               </div>
+            </div>
+          </div>
+        </SectionWrapper>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {/* Using Unsplash images with descriptive alts */}
+        {/* WORK SECTION */}
+        <SectionWrapper id="work" className="py-48 px-6">
+          <div className="container mx-auto">
+            <div className="flex flex-col items-center text-center mb-24">
+              <span className="text-primary text-sm font-bold uppercase tracking-[0.4em] mb-4">Portfolio</span>
+              <h2 className="font-display text-5xl md:text-7xl tracking-tighter mb-8">Selected Case Studies</h2>
+              <p className="text-white/50 max-w-xl font-light text-lg">
+                High-stakes digital transformation for organizations that define their industries.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
               {[
                 {
-                  // futuristic architecture building blue lighting
-                  url: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800&q=80",
-                  title: "Apex Tower",
-                  cat: "Real Estate"
+                  url: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=1200&q=80",
+                  title: "The Federal Reserve Initiative",
+                  cat: "Financial Sector",
+                  desc: "Modernizing a national visual narrative."
                 },
                 {
-                  // abstract digital art neon fluid
-                  url: "https://images.unsplash.com/photo-1550684848-fac1c5b4e853?w=800&q=80",
-                  title: "Flux Energy",
-                  cat: "Tech Startup"
+                  url: "https://images.unsplash.com/photo-1550684848-fac1c5b4e853?w=1200&q=80",
+                  title: "Defense Systems Group",
+                  cat: "Aerospace & Defense",
+                  desc: "High-security brand perception management."
                 }
               ].map((work, idx) => (
                 <motion.div
                   key={idx}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: idx * 0.2 }}
-                  className="relative group overflow-hidden rounded-lg aspect-video cursor-pointer"
+                  whileHover={{ y: -10 }}
+                  className="group relative cursor-pointer"
                 >
-                  <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors z-10" />
-                  <img
-                    src={work.url}
-                    alt={work.title}
-                    className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700"
-                  />
-                  <div className="absolute bottom-0 left-0 p-8 z-20">
-                    <p className="text-primary text-sm font-bold uppercase tracking-widest mb-2">{work.cat}</p>
-                    <h3 className="text-3xl font-display font-bold">{work.title}</h3>
+                  <div className="relative aspect-[16/10] overflow-hidden rounded-2xl border border-white/10">
+                    <div className="absolute inset-0 bg-blue-900/40 group-hover:bg-blue-900/20 transition-all duration-700 z-10" />
+                    <img
+                      src={work.url}
+                      alt={work.title}
+                      className="w-full h-full object-cover grayscale opacity-80 group-hover:grayscale-0 group-hover:scale-105 group-hover:opacity-100 transition-all duration-1000"
+                    />
+                    <div className="absolute top-8 right-8 z-20">
+                      <div className="bg-[#020617]/80 backdrop-blur-md border border-white/10 p-4 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                        <ArrowRight className="w-5 h-5 text-primary" />
+                      </div>
+                    </div>
+                  </div>
+                  <div className="mt-8">
+                    <p className="text-primary text-xs font-bold uppercase tracking-[0.3em] mb-2">{work.cat}</p>
+                    <h3 className="text-3xl font-display font-bold tracking-tight mb-3">{work.title}</h3>
+                    <p className="text-white/40 font-light">{work.desc}</p>
                   </div>
                 </motion.div>
               ))}
             </div>
           </div>
-        </section>
+        </SectionWrapper>
+
+        {/* TRUST SECTION */}
+        <SectionWrapper className="py-24 border-y border-white/5 bg-white/[0.01]">
+          <div className="container mx-auto px-6">
+             <div className="flex flex-wrap justify-center items-center gap-16 md:gap-32 opacity-30 grayscale hover:opacity-100 transition-opacity duration-700">
+                < LandMarkIcon className="w-12 h-12" />
+                < Award className="w-12 h-12" />
+                < Shield className="w-12 h-12" />
+                < Globe className="w-12 h-12" />
+                < Zap className="w-12 h-12" />
+             </div>
+          </div>
+        </SectionWrapper>
 
         {/* CONTACT SECTION */}
-        <section id="contact" className="py-32 px-6 relative">
-          <div className="container mx-auto max-w-4xl">
-            <div className="bg-card/50 backdrop-blur-xl border border-white/10 rounded-3xl p-8 md:p-16 shadow-2xl shadow-black/50">
-              <div className="text-center mb-12">
-                <h2 className="font-display text-4xl md:text-5xl mb-4">Start Your Journey</h2>
-                <p className="text-white/60">Ready to transform your digital presence? Let's talk.</p>
+        <section id="contact" className="py-48 px-6 relative">
+          <div className="container mx-auto max-w-5xl">
+            <div className="bg-white/[0.02] backdrop-blur-3xl border border-white/10 rounded-[3rem] p-12 md:p-24 shadow-2xl relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-96 h-96 bg-primary/5 blur-[150px] -mr-48 -mt-48" />
+              <div className="relative z-10">
+                <div className="text-center mb-16">
+                  <span className="text-primary text-sm font-bold uppercase tracking-[0.4em] mb-4 block">Get in Touch</span>
+                  <h2 className="font-display text-5xl md:text-7xl mb-6 tracking-tighter">Initiate Consultation</h2>
+                  <p className="text-white/50 text-xl font-light max-w-2xl mx-auto">
+                    Secure your market position with our strategic digital architecture.
+                  </p>
+                </div>
+
+                <Form {...form}>
+                  <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                      <FormField
+                        control={form.control}
+                        name="name"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="text-white/60 uppercase tracking-widest text-xs font-bold">Full Name</FormLabel>
+                            <FormControl>
+                              <Input 
+                                placeholder="ALEXANDER HAMILTON" 
+                                className="bg-white/[0.03] border-white/10 focus:border-primary/50 h-16 rounded-xl text-white placeholder:text-white/10 text-lg tracking-wide px-6" 
+                                {...field} 
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name="email"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="text-white/60 uppercase tracking-widest text-xs font-bold">Professional Email</FormLabel>
+                            <FormControl>
+                              <Input 
+                                placeholder="HAMILTON@FEDERAL.GOV" 
+                                className="bg-white/[0.03] border-white/10 focus:border-primary/50 h-16 rounded-xl text-white placeholder:text-white/10 text-lg tracking-wide px-6" 
+                                {...field} 
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                    
+                    <FormField
+                      control={form.control}
+                      name="message"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-white/60 uppercase tracking-widest text-xs font-bold">Project Scope</FormLabel>
+                          <FormControl>
+                            <Textarea 
+                              placeholder="OUTLINE YOUR STRATEGIC OBJECTIVES..." 
+                              className="bg-white/[0.03] border-white/10 focus:border-primary/50 min-h-[200px] rounded-xl text-white placeholder:text-white/10 text-lg tracking-wide px-6 py-6 resize-none" 
+                              {...field} 
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <Button 
+                      type="submit" 
+                      disabled={createInquiry.isPending}
+                      className="w-full h-20 rounded-xl bg-primary text-white hover:bg-white hover:text-black text-xl font-bold tracking-[0.2em] uppercase transition-all duration-700 shadow-2xl shadow-primary/20"
+                    >
+                      {createInquiry.isPending ? "PROCESSSING..." : "DISPATCH INQUIRY"}
+                    </Button>
+                  </form>
+                </Form>
               </div>
-
-              <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <FormField
-                      control={form.control}
-                      name="name"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-white/80">Name</FormLabel>
-                          <FormControl>
-                            <Input 
-                              placeholder="John Doe" 
-                              className="bg-white/5 border-white/10 focus:border-primary/50 h-12 rounded-xl text-white placeholder:text-white/20" 
-                              {...field} 
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="email"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-white/80">Email</FormLabel>
-                          <FormControl>
-                            <Input 
-                              placeholder="john@example.com" 
-                              className="bg-white/5 border-white/10 focus:border-primary/50 h-12 rounded-xl text-white placeholder:text-white/20" 
-                              {...field} 
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                  
-                  <FormField
-                    control={form.control}
-                    name="message"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-white/80">Message</FormLabel>
-                        <FormControl>
-                          <Textarea 
-                            placeholder="Tell us about your project..." 
-                            className="bg-white/5 border-white/10 focus:border-primary/50 min-h-[150px] rounded-xl text-white placeholder:text-white/20 resize-none" 
-                            {...field} 
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <Button 
-                    type="submit" 
-                    disabled={createInquiry.isPending}
-                    className="w-full h-14 rounded-xl bg-white text-background hover:bg-primary hover:text-white text-lg font-bold tracking-wide transition-all duration-300 shadow-lg hover:shadow-primary/25"
-                  >
-                    {createInquiry.isPending ? "Sending..." : "Send Inquiry"}
-                  </Button>
-                </form>
-              </Form>
             </div>
           </div>
         </section>
@@ -333,3 +434,28 @@ export default function Home() {
     </div>
   );
 }
+
+function LandMarkIcon(props: any) {
+  return (
+    <svg 
+      {...props} 
+      xmlns="http://www.w3.org/2000/svg" 
+      width="24" 
+      height="24" 
+      viewBox="0 0 24 24" 
+      fill="none" 
+      stroke="currentColor" 
+      strokeWidth="2" 
+      strokeLinecap="round" 
+      strokeLinejoin="round"
+    >
+      <line x1="3" y1="22" x2="21" y2="22" />
+      <line x1="6" y1="18" x2="6" y2="11" />
+      <line x1="10" y1="18" x2="10" y2="11" />
+      <line x1="14" y1="18" x2="14" y2="11" />
+      <line x1="18" y1="18" x2="18" y2="11" />
+      <polygon points="12 2 20 7 4 7" />
+    </svg>
+  );
+}
+

@@ -1,63 +1,92 @@
 import { useRef, useMemo } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { Stars, Float, PerspectiveCamera } from '@react-three/drei';
+import { Stars, Float, PerspectiveCamera, MeshDistortMaterial } from '@react-three/drei';
+import { useScroll, useTransform } from 'framer-motion';
 import * as THREE from 'three';
 
 function MovingStars() {
   const ref = useRef<any>();
   useFrame((state) => {
     if (ref.current) {
-      ref.current.rotation.y = state.clock.getElapsedTime() * 0.05;
-      ref.current.rotation.x = Math.sin(state.clock.getElapsedTime() * 0.02) * 0.1;
+      ref.current.rotation.y = state.clock.getElapsedTime() * 0.02;
+      ref.current.rotation.x = Math.sin(state.clock.getElapsedTime() * 0.01) * 0.05;
     }
   });
   return (
     <group ref={ref}>
-      <Stars radius={100} depth={50} count={5000} factor={4} saturation={0} fade speed={1} />
+      <Stars radius={100} depth={50} count={3000} factor={4} saturation={0} fade speed={0.5} />
+    </group>
+  );
+}
+
+function ArchitecturalLines() {
+  const group = useRef<THREE.Group>(null!);
+  
+  // Create abstract pillar-like structures
+  const lines = useMemo(() => {
+    const items = [];
+    for (let i = 0; i < 20; i++) {
+      items.push({
+        position: [
+          (Math.random() - 0.5) * 40,
+          -15,
+          -Math.random() * 100
+        ] as [number, number, number],
+        height: 20 + Math.random() * 40,
+        width: 0.1 + Math.random() * 0.5
+      });
+    }
+    return items;
+  }, []);
+
+  return (
+    <group ref={group}>
+      {lines.map((line, i) => (
+        <mesh key={i} position={line.position}>
+          <boxGeometry args={[line.width, line.height, line.width]} />
+          <meshStandardMaterial color="#4A90E2" transparent opacity={0.1} />
+        </mesh>
+      ))}
     </group>
   );
 }
 
 function GridFloor() {
   const gridRef = useRef<THREE.Group>(null);
+  const { scrollYProgress } = useScroll();
+  const zPos = useTransform(scrollYProgress, [0, 1], [0, 50]);
   
-  useFrame((state) => {
+  useFrame(() => {
     if (gridRef.current) {
-      // Create an infinite scrolling floor effect
-      const t = state.clock.getElapsedTime();
-      gridRef.current.position.z = (t * 2) % 10;
+      gridRef.current.position.z = zPos.get() % 10;
     }
   });
 
   return (
-    <group ref={gridRef} rotation={[-Math.PI / 2, 0, 0]} position={[0, -10, 0]}>
-      <gridHelper args={[100, 50, 0x4444ff, 0x111122]} />
+    <group ref={gridRef} rotation={[-Math.PI / 2, 0, 0]} position={[0, -12, 0]}>
+      <gridHelper args={[200, 100, 0x1e3a8a, 0x0f172a]} />
     </group>
   );
 }
 
-function FloatingParticles({ count = 100 }) {
+function FloatingParticles({ count = 200 }) {
   const points = useRef<THREE.Points>(null!);
   
   const particlesPosition = useMemo(() => {
     const positions = new Float32Array(count * 3);
     for (let i = 0; i < count; i++) {
-      positions[i * 3] = (Math.random() - 0.5) * 50;     // x
-      positions[i * 3 + 1] = (Math.random() - 0.5) * 30; // y
-      positions[i * 3 + 2] = (Math.random() - 0.5) * 100; // z
+      positions[i * 3] = (Math.random() - 0.5) * 60;
+      positions[i * 3 + 1] = (Math.random() - 0.5) * 40;
+      positions[i * 3 + 2] = (Math.random() - 0.5) * 150;
     }
     return positions;
   }, [count]);
 
   useFrame((state) => {
     if (points.current) {
-      points.current.rotation.z += 0.001;
-      points.current.position.z += 0.05;
-      
-      // Reset position to create infinite loop effect without complex logic
-      if (points.current.position.z > 20) {
-        points.current.position.z = -20;
-      }
+      points.current.rotation.z += 0.0005;
+      points.current.position.z += 0.02;
+      if (points.current.position.z > 30) points.current.position.z = -70;
     }
   });
 
@@ -72,10 +101,10 @@ function FloatingParticles({ count = 100 }) {
         />
       </bufferGeometry>
       <pointsMaterial
-        size={0.15}
-        color="#4A90E2"
+        size={0.1}
+        color="#ffffff"
         transparent
-        opacity={0.6}
+        opacity={0.3}
         sizeAttenuation
         blending={THREE.AdditiveBlending}
       />
@@ -85,16 +114,24 @@ function FloatingParticles({ count = 100 }) {
 
 function CameraController() {
   const { camera } = useThree();
-  const vec = new THREE.Vector3();
+  const { scrollYProgress } = useScroll();
+  
+  // Camera Z-movement based on scroll
+  const zMovement = useTransform(scrollYProgress, [0, 1], [15, -50]);
+  const yMovement = useTransform(scrollYProgress, [0, 1], [0, 5]);
+  const xRotation = useTransform(scrollYProgress, [0, 1], [0, -0.1]);
 
   useFrame((state) => {
-    // Basic camera movement based on mouse
-    const x = state.pointer.x * 0.5;
-    const y = state.pointer.y * 0.5;
+    // Cinematic drift based on mouse
+    const x = state.pointer.x * 0.2;
+    const y = state.pointer.y * 0.2;
     
-    // Smooth interpolation
-    camera.position.lerp(vec.set(x, y, camera.position.z), 0.05);
-    camera.lookAt(0, 0, -50); // Look towards the horizon
+    camera.position.z = THREE.MathUtils.lerp(camera.position.z, zMovement.get(), 0.05);
+    camera.position.y = THREE.MathUtils.lerp(camera.position.y, y + yMovement.get(), 0.05);
+    camera.position.x = THREE.MathUtils.lerp(camera.position.x, x, 0.05);
+    
+    camera.rotation.x = THREE.MathUtils.lerp(camera.rotation.x, xRotation.get(), 0.05);
+    camera.lookAt(0, 0, camera.position.z - 50);
   });
 
   return null;
@@ -102,27 +139,28 @@ function CameraController() {
 
 export function Scene3D() {
   return (
-    <div className="fixed inset-0 z-[-1] pointer-events-none bg-slate-950">
-      <Canvas dpr={[1, 2]} gl={{ antialias: true, alpha: false }}>
-        <PerspectiveCamera makeDefault position={[0, 0, 10]} fov={75} />
+    <div className="fixed inset-0 z-0 pointer-events-none bg-[#020617]">
+      <Canvas dpr={[1, 1.5]} gl={{ antialias: true, alpha: false }} powerPreference="high-performance">
+        <PerspectiveCamera makeDefault position={[0, 0, 15]} fov={60} />
         <color attach="background" args={['#020617']} />
-        <fog attach="fog" args={['#020617', 5, 40]} />
+        <fog attach="fog" args={['#020617', 10, 60]} />
         
-        <ambientLight intensity={0.2} />
-        <pointLight position={[10, 10, 10]} intensity={1.5} color="#4A90E2" />
-        <pointLight position={[-10, -10, -10]} intensity={0.5} color="#A855F7" />
+        <ambientLight intensity={0.5} />
+        <pointLight position={[20, 20, 20]} intensity={2} color="#1e40af" />
+        <pointLight position={[-20, -20, -20]} intensity={1} color="#1e3a8a" />
         
         <MovingStars />
         <GridFloor />
-        <Float speed={2} rotationIntensity={0.5} floatIntensity={0.5}>
-          <FloatingParticles count={300} />
-        </Float>
+        <ArchitecturalLines />
+        <FloatingParticles count={400} />
         
         <CameraController />
       </Canvas>
       
-      {/* Overlay gradient for better text readability */}
-      <div className="absolute inset-0 bg-gradient-to-b from-slate-950/30 via-transparent to-slate-950/80 pointer-events-none" />
+      {/* Cinematic Dark Blue Wash */}
+      <div className="absolute inset-0 bg-gradient-to-b from-blue-950/40 via-transparent to-[#020617] pointer-events-none" />
+      <div className="absolute inset-0 bg-[#020617]/20 pointer-events-none backdrop-blur-[2px]" />
     </div>
   );
 }
+
