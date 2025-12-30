@@ -1,0 +1,114 @@
+TASK:
+Upgrade the "Washington Advert" landing page
+to strongly reflect a WASHINGTON DC identity,
+with richer content and cinematic scroll animations
+inspired by rangerover3d.vercel.app.
+
+IMPORTANT:
+• Brand name must remain "Washington Advert"
+• Layout already exists — enhance it, do not replace it
+• Focus on Washington DC feel, depth, and storytelling
+
+================================
+WASHINGTON DC VISUAL IDENTITY
+================================
+
+Use Washington DC inspiration subtly:
+
+• Inspired by US Capitol architecture
+• Clean, powerful, authoritative, premium look
+• Trust, policy, leadership, growth feeling
+
+BACKGROUND USAGE:
+• Use a blurred / darkened Washington DC inspired background
+• Add strong dark-blue overlay
+• Do NOT place sharp full photo behind text
+• Background should feel atmospheric, not literal
+
+================================
+THREE.JS BACKGROUND (MANDATORY)
+================================
+
+Create a global Three.js background scene:
+
+• Abstract architectural lines
+• Subtle grid / columns / depth planes
+• Soft glowing particles
+• Light fog / vignette
+
+Inspired by:
+• Government buildings
+• Monumental scale
+• Stability & trust
+
+================================
+RANGEROOVER-STYLE SCROLL EXPERIENCE
+================================
+
+SCROLL SHOULD FEEL LIKE:
+• Camera moving forward
+• Sections passing through space
+• Cinematic depth
+
+IMPLEMENT:
+
+1) SCROLL → CAMERA Z MOVEMENT
+• Camera moves slowly forward on scroll
+• Slight X/Y drift for cinematic feel
+• Smooth lerp interpolation
+
+2) PARALLAX DEPTH
+• Foreground text: minimal movement
+• Mid layers: slow movement
+• Deep background: more movement
+
+3) SECTION ENTRY
+• Fade in + translateY (20px)
+• Trigger once per section
+• Smooth easing
+
+================================
+CONTENT EXPANSION (IMPORTANT)
+================================
+
+Increase landing page content to feel premium:
+
+ADD:
+• Short intro paragraph below hero
+• Micro-copy under each service
+• Trust / credibility mini-section
+• Strategy explanation blocks
+• US-focused language (growth, scale, authority)
+
+Avoid:
+• Long boring paragraphs
+• Marketing fluff
+
+================================
+STRICT UI RULES
+================================
+
+❌ No text masking
+❌ No blue blocks
+❌ No animated text background
+❌ No heavy 3D objects
+
+✔ Text always readable
+✔ Three.js only for atmosphere
+✔ Smooth, professional motion
+
+================================
+MOBILE & PERFORMANCE
+================================
+
+• Reduce 3D intensity on mobile
+• Fallback to simple scroll animations
+• Maintain 60fps
+• Respect prefers-reduced-motion
+
+FINAL RESULT:
+A Washington Advert landing page that:
+• Feels like Washington DC
+• Has cinematic scroll like rangerover3d
+• Feels authoritative & premium
+• Is content-rich & client-ready
