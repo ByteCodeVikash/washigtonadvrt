@@ -5,34 +5,34 @@
 @tailwind utilities;
 
 :root {
-  /* Refined Washington D.C. Palette - Sophisticated Slate & Gold */
-  --background: 210 20% 98%;
-  --foreground: 222 47% 4%;
+  /* Premium Washington D.C. Palette - Deep Navy & Authority Blue */
+  --background: 222 47% 4%;
+  --foreground: 210 40% 98%;
 
-  --card: 0 0% 100%;
-  --card-foreground: 222 47% 4%;
+  --card: 222 47% 6%;
+  --card-foreground: 210 40% 98%;
 
-  --popover: 0 0% 100%;
-  --popover-foreground: 222 47% 4%;
+  --popover: 222 47% 4%;
+  --popover-foreground: 210 40% 98%;
 
-  --primary: 222 47% 15%;
-  --primary-foreground: 210 20% 98%;
+  --primary: 217 91% 60%;
+  --primary-foreground: 222 47% 4%;
 
-  --secondary: 43 46% 85%;
-  --secondary-foreground: 222 47% 15%;
+  --secondary: 217 32% 12%;
+  --secondary-foreground: 210 40% 98%;
 
-  --muted: 210 20% 90%;
-  --muted-foreground: 215 20% 35%;
+  --muted: 217 32% 12%;
+  --muted-foreground: 215 20% 65%;
 
-  --accent: 43 46% 65%;
-  --accent-foreground: 222 47% 15%;
+  --accent: 217 91% 60%;
+  --accent-foreground: 222 47% 4%;
 
-  --destructive: 0 84% 60%;
-  --destructive-foreground: 210 20% 98%;
+  --destructive: 0 62% 30%;
+  --destructive-foreground: 210 40% 98%;
 
-  --border: 214 32% 91%;
-  --input: 214 32% 91%;
-  --ring: 222 47% 15%;
+  --border: 217 32% 15%;
+  --input: 217 32% 12%;
+  --ring: 224 76% 48%;
 
   --font-display: 'Playfair Display', serif;
   --font-body: 'DM Sans', sans-serif;
@@ -40,13 +40,13 @@
 
 @layer base {
   body {
-    @apply bg-background text-foreground antialiased selection:bg-primary/30 selection:text-primary-foreground;
+    @apply bg-background text-foreground antialiased selection:bg-primary/30 selection:text-white;
     font-family: var(--font-body);
   }
 
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-display);
-    @apply tracking-tight font-bold text-primary;
+    @apply tracking-tight font-bold text-foreground;
   }
 }
 

@@ -33,9 +33,9 @@ export function Navigation() {
         }`}
       >
         <div className="container mx-auto px-6 flex items-center justify-between">
-          <Link href="/" className="font-display text-2xl font-bold tracking-tight text-primary z-50 relative group cursor-pointer">
+          <Link href="/" className="font-display text-2xl font-bold tracking-tight text-white z-50 relative group cursor-pointer">
             WASHINGTON
-            <span className="text-foreground/80 font-light ml-2 group-hover:text-primary transition-colors">ADVERT</span>
+            <span className="text-primary font-light ml-2 group-hover:text-white transition-colors">ADVERT</span>
           </Link>
 
           {/* Desktop Nav */}
@@ -44,14 +44,14 @@ export function Navigation() {
               <a
                 key={link.name}
                 href={link.href}
-                className="text-sm uppercase tracking-widest font-medium text-foreground/70 hover:text-primary transition-colors relative after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-px after:bg-primary after:transition-all hover:after:w-full"
+                className="text-sm uppercase tracking-widest font-medium text-white/70 hover:text-white transition-colors relative after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-px after:bg-primary after:transition-all hover:after:w-full"
               >
                 {link.name}
               </a>
             ))}
             <a
               href="#contact"
-              className="px-6 py-2 bg-primary text-primary-foreground text-sm font-bold uppercase tracking-wider hover:opacity-90 transition-all duration-300"
+              className="px-6 py-2 bg-white text-background text-sm font-bold uppercase tracking-wider hover:bg-primary hover:text-white transition-all duration-300"
             >
               Start Project
             </a>
@@ -60,7 +60,7 @@ export function Navigation() {
           {/* Mobile Menu Button */}
           <button
             onClick={() => setIsOpen(!isOpen)}
-            className="md:hidden text-primary z-50 relative focus:outline-none"
+            className="md:hidden text-white z-50 relative focus:outline-none"
           >
             {isOpen ? <X /> : <Menu />}
           </button>
@@ -79,7 +79,7 @@ export function Navigation() {
             key={link.name}
             href={link.href}
             onClick={() => setIsOpen(false)}
-            className="text-3xl font-display font-light text-foreground hover:text-primary transition-colors"
+            className="text-3xl font-display font-light text-white hover:text-primary transition-colors"
           >
             {link.name}
           </a>
@@ -87,7 +87,7 @@ export function Navigation() {
         <a
           href="#contact"
           onClick={() => setIsOpen(false)}
-          className="mt-8 px-8 py-3 bg-primary text-primary-foreground text-lg font-bold uppercase tracking-wider"
+          className="mt-8 px-8 py-3 bg-white text-background text-lg font-bold uppercase tracking-wider"
         >
           Start Project
         </a>

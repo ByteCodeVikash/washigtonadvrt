@@ -44,7 +44,7 @@ function ArchitecturalLines() {
       {lines.map((line, i) => (
         <mesh key={i} position={line.position}>
           <boxGeometry args={[line.width, line.height, line.width]} />
-          <meshStandardMaterial color="#222222" transparent opacity={0.05} />
+          <meshStandardMaterial color="#4A90E2" transparent opacity={0.1} />
         </mesh>
       ))}
     </group>
@@ -64,7 +64,7 @@ function GridFloor() {
 
   return (
     <group ref={gridRef} rotation={[-Math.PI / 2, 0, 0]} position={[0, -12, 0]}>
-      <gridHelper args={[200, 100, 0x1e1e1e, 0xd1d5db]} />
+      <gridHelper args={[200, 100, 0x1e3a8a, 0x0f172a]} />
     </group>
   );
 }
@@ -102,11 +102,11 @@ function FloatingParticles({ count = 200 }) {
       </bufferGeometry>
       <pointsMaterial
         size={0.1}
-        color="#000000"
+        color="#ffffff"
         transparent
-        opacity={0.1}
+        opacity={0.3}
         sizeAttenuation
-        blending={THREE.NormalBlending}
+        blending={THREE.AdditiveBlending}
       />
     </points>
   );
@@ -140,23 +140,26 @@ function CameraController() {
 export function Scene3D() {
   return (
     <div className="fixed inset-0 z-0 pointer-events-none bg-background">
-      <Canvas dpr={[1, 1.5]} gl={{ antialias: true, alpha: true }}>
+      <Canvas dpr={[1, 1.5]} gl={{ antialias: true, alpha: false }}>
         <PerspectiveCamera makeDefault position={[0, 0, 15]} fov={60} />
+        <color attach="background" args={['#020617']} />
+        <fog attach="fog" args={['#020617', 10, 60]} />
         
         <ambientLight intensity={0.5} />
-        <pointLight position={[20, 20, 20]} intensity={1} color="#434655" />
-        <pointLight position={[-20, -20, -20]} intensity={0.5} color="#434655" />
+        <pointLight position={[20, 20, 20]} intensity={2} color="#1e40af" />
+        <pointLight position={[-20, -20, -20]} intensity={1} color="#1e3a8a" />
         
         <MovingStars />
         <GridFloor />
         <ArchitecturalLines />
-        <FloatingParticles count={200} />
+        <FloatingParticles count={400} />
         
         <CameraController />
       </Canvas>
       
-      {/* Cinematic Wash */}
-      <div className="absolute inset-0 bg-gradient-to-b from-background/40 via-transparent to-background pointer-events-none" />
+      {/* Cinematic Dark Blue Wash */}
+      <div className="absolute inset-0 bg-gradient-to-b from-blue-950/40 via-transparent to-background pointer-events-none" />
+      <div className="absolute inset-0 bg-background/20 pointer-events-none backdrop-blur-[2px]" />
     </div>
   );
 }
