@@ -5,34 +5,48 @@
 @tailwind utilities;
 
 :root {
-  /* Premium Washington D.C. Palette - Deep Navy & Authority Blue */
-  --background: 222 47% 4%;
-  --foreground: 210 40% 98%;
+  /* Premium Washington D.C. Agency Palette (Exact Specs) */
 
-  --card: 222 47% 6%;
-  --card-foreground: 210 40% 98%;
+  /* Background: #F5F7FB */
+  --background: 220 27% 97%;
 
-  --popover: 222 47% 4%;
-  --popover-foreground: 210 40% 98%;
+  /* Primary Text: #0F172A */
+  --foreground: 222 47% 11%;
 
-  --primary: 217 91% 60%;
-  --primary-foreground: 222 47% 4%;
+  /* Cards: White background */
+  --card: 0 0% 100%;
+  --card-foreground: 222 47% 11%;
 
-  --secondary: 217 32% 12%;
-  --secondary-foreground: 210 40% 98%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 222 47% 11%;
 
-  --muted: 217 32% 12%;
-  --muted-foreground: 215 20% 65%;
+  /* Primary Accent (Buttons): #4FA3FF */
+  --primary: 211 100% 65%;
+  --primary-foreground: 210 59% 13%;
+  /* #0E2236 */
 
-  --accent: 217 91% 60%;
-  --accent-foreground: 222 47% 4%;
+  /* Secondary / Alt Background: #EEF2F7 */
+  --secondary: 213 27% 95%;
+  --secondary-foreground: 222 47% 11%;
 
-  --destructive: 0 62% 30%;
-  --destructive-foreground: 210 40% 98%;
+  /* Muted: #EEF2F7 */
+  --muted: 213 27% 95%;
+  /* Secondary Text: #475569 */
+  --muted-foreground: 215 19% 35%;
 
-  --border: 217 32% 15%;
-  --input: 217 32% 12%;
-  --ring: 224 76% 48%;
+  /* Accent Highlight: #38BDF8 */
+  --accent: 198 93% 60%;
+  --accent-foreground: 0 0% 100%;
+
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 0 0% 100%;
+
+  /* Border: #E2E8F0 */
+  --border: 214 32% 91%;
+  --input: 214 32% 91%;
+  --ring: 221 83% 53%;
+
+  --radius: 0.5rem;
 
   --font-display: 'Playfair Display', serif;
   --font-body: 'DM Sans', sans-serif;
@@ -44,7 +58,12 @@
     font-family: var(--font-body);
   }
 
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     font-family: var(--font-display);
     @apply tracking-tight font-bold text-foreground;
   }
@@ -59,13 +78,16 @@ html {
 ::-webkit-scrollbar {
   width: 8px;
 }
+
 ::-webkit-scrollbar-track {
   background: hsl(var(--background));
 }
+
 ::-webkit-scrollbar-thumb {
   background: hsl(var(--secondary));
   border-radius: 4px;
 }
+
 ::-webkit-scrollbar-thumb:hover {
   background: hsl(var(--primary) / 0.5);
 }

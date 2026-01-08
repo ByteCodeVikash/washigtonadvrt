@@ -12,4 +12,19 @@ export class DatabaseStorage implements IStorage {
   }
 }
 
-export const storage = new DatabaseStorage();
+// Mock storage for landing page only (no database required)
+export class MockStorage implements IStorage {
+  async createInquiry(insertInquiry: InsertInquiry): Promise<Inquiry> {
+    // Return a mock inquiry response without database
+    return {
+      id: Date.now(),
+      ...insertInquiry,
+      createdAt: new Date(),
+    } as Inquiry;
+  }
+}
+
+// Use MockStorage when DATABASE_URL is not set (landing page only mode)
+export const storage = process.env.DATABASE_URL
+  ? new DatabaseStorage()
+  : new MockStorage();

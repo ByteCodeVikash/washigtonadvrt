@@ -1,460 +1,371 @@
-import { useRef, useState } from 'react';
-import { motion, useScroll, useTransform, useSpring, useInView } from 'framer-motion';
-import { ArrowRight, Globe, Layers, Zap, Shield, TrendingUp, Landmark, Award } from 'lucide-react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-
-import { Scene3D } from '@/components/Scene3D';
+import { useRef, useState, MouseEvent } from 'react';
+import { motion, useScroll, useTransform, useSpring, useMotionValue } from 'framer-motion';
+import { ArrowRight, Rocket, BarChart3, PenTool, Shield, TrendingUp, Users, DollarSign, Quote } from 'lucide-react';
 import { Navigation } from '@/components/Navigation';
 import { Footer } from '@/components/Footer';
-import { useCreateInquiry } from '@/hooks/use-inquiries';
-import { insertInquirySchema } from '@shared/schema';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Button } from '@/components/ui/button';
-import { useToast } from '@/hooks/use-toast';
+import ThreeBackground from '@/components/ThreeBackground';
 
-function SectionWrapper({ children, className = "", id = "" }: { children: React.ReactNode, className?: string, id?: string }) {
+// --- Scroll Logic Helpers (Unchanged) ---
+function ScrollParallax({ children, speed = 0.5, className = "" }: { children: React.ReactNode, speed?: number, className?: string }) {
   const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-100px" });
-
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
+  const y = useTransform(scrollYProgress, [0, 1], ["-10%", `${10 * speed}%`]);
   return (
-    <motion.section
-      ref={ref}
-      id={id}
-      initial={{ opacity: 0, y: 20 }}
-      animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-      transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-      className={className}
-    >
-      {children}
-    </motion.section>
-  );
-}
-
-export default function Home() {
-  const { scrollYProgress } = useScroll();
-  const scale = useTransform(scrollYProgress, [0, 0.1], [1, 0.95]);
-  const opacity = useTransform(scrollYProgress, [0, 0.1], [1, 0]);
-  
-  const createInquiry = useCreateInquiry();
-  const { toast } = useToast();
-
-  const form = useForm<z.infer<typeof insertInquirySchema>>({
-    resolver: zodResolver(insertInquirySchema),
-    defaultValues: {
-      name: "",
-      email: "",
-      message: "",
-    },
-  });
-
-  const onSubmit = (data: z.infer<typeof insertInquirySchema>) => {
-    createInquiry.mutate(data, {
-      onSuccess: () => {
-        toast({
-          title: "Inquiry Sent",
-          description: "We will get back to you shortly.",
-        });
-        form.reset();
-      },
-    });
-  };
-
-  return (
-    <div className="min-h-screen relative text-white selection:bg-primary selection:text-white bg-background">
-      <Scene3D />
-      <Navigation />
-
-      <main className="relative z-10">
-        {/* HERO SECTION */}
-        <section className="h-[110vh] flex items-center justify-center px-6 relative overflow-hidden">
-          <motion.div 
-            style={{ opacity, scale }}
-            className="text-center max-w-5xl mx-auto"
-          >
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1, delay: 0.2 }}
-            >
-              <h2 className="text-sm md:text-base font-bold tracking-[0.4em] uppercase text-primary mb-8 drop-shadow-sm">
-                Washington Advert • Digital Agency
-              </h2>
-            </motion.div>
-            
-            <motion.h1
-              initial={{ opacity: 0, y: 40 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1.2, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
-              className="font-display text-6xl md:text-8xl lg:text-[8rem] font-semibold tracking-tighter leading-[0.9] mb-10 bg-clip-text text-transparent bg-gradient-to-b from-white via-white to-white/30"
-            >
-              DIGITAL MARKETING
-              <br />
-              <span className="italic font-light opacity-90">THAT DRIVES</span>
-              <br />
-              YOUR BUSINESS
-            </motion.h1>
-            
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 1, delay: 0.8 }}
-              className="space-y-6"
-            >
-              <p className="text-lg md:text-2xl text-white/70 max-w-3xl mx-auto font-light leading-relaxed">
-                Get Started Today, Supercharge Your Digital Presence. 
-                We engineer market-leading narratives for brands that demand monumental scale.
-              </p>
-            </motion.div>
-            
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1, delay: 1 }}
-              className="mt-16 flex flex-col md:flex-row items-center justify-center gap-8"
-            >
-              <a href="#contact" className="group flex items-center gap-3 px-8 py-4 bg-primary text-primary-foreground text-sm uppercase tracking-[0.2em] font-bold rounded-full hover:bg-white hover:text-black transition-all duration-500 shadow-2xl shadow-primary/20">
-                Get Started
-                <ArrowRight className="w-5 h-5 group-hover:translate-x-2 transition-transform duration-500" />
-              </a>
-              <div className="h-px w-12 bg-white/20 hidden md:block" />
-              <span className="text-white/40 text-xs uppercase tracking-[0.3em]">Est. 2025 • Washington D.C.</span>
-            </motion.div>
-          </motion.div>
-        </section>
-
-        {/* INTRODUCTION BLOCK */}
-        <SectionWrapper className="py-24 px-6 border-y border-white/5 bg-white/[0.02]">
-          <div className="container mx-auto max-w-4xl text-center">
-            <Landmark className="w-12 h-12 text-primary/40 mx-auto mb-8" />
-            <h3 className="font-display text-3xl md:text-4xl mb-6 tracking-tight">A Brand-first Digital Agency</h3>
-            <p className="text-white/60 text-lg font-light leading-relaxed">
-              We are a passionate team of strategists, creatives, and storytellers who weave compelling narratives across all digital channels. From cutting-edge website design to data-driven social media campaigns, we push boundaries to deliver results that not only resonate but ignite brand growth.
-            </p>
-          </div>
-        </SectionWrapper>
-
-        {/* ABOUT SECTION */}
-        <SectionWrapper id="about" className="py-48 px-6 relative overflow-hidden">
-          <div className="container mx-auto">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-24 items-center">
-              <div className="relative">
-                <motion.div 
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 1 }}
-                  className="aspect-[4/5] rounded-2xl overflow-hidden bg-white/5 border border-white/10"
-                >
-                  <img 
-                    src="https://images.unsplash.com/photo-1501466044931-62695aada8e9?w=1200&q=80" 
-                    alt="Washington DC Architectural Detail"
-                    className="w-full h-full object-cover opacity-60 grayscale hover:grayscale-0 transition-all duration-1000"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent" />
-                </motion.div>
-                <div className="absolute -bottom-10 -right-10 w-64 h-64 bg-primary/10 blur-[100px] rounded-full" />
-              </div>
-              <div className="relative z-10">
-                <span className="text-primary text-sm font-bold uppercase tracking-[0.3em] mb-6 block">Our Foundation</span>
-                <h2 className="font-display text-5xl md:text-7xl mb-10 leading-[0.9] tracking-tighter">
-                  Authority<br/>
-                  <span className="text-primary italic font-light">By Design.</span>
-                </h2>
-                <div className="space-y-8 text-xl text-white/70 leading-relaxed font-light">
-                  <p>
-                    We don't just follow trends, we set them, ensuring your brand stays ahead of the curve in this ever-evolving digital world.
-                  </p>
-                  <p>
-                    Our approach integrates high-level strategic planning with high-performance digital execution, creating a presence that doesn't just participate in the market—it leads it.
-                  </p>
-                </div>
-                <div className="grid grid-cols-2 gap-8 mt-16">
-                  <div>
-                    <h4 className="font-display text-3xl text-white mb-2">850+</h4>
-                    <p className="text-xs uppercase tracking-widest text-white/40">Projects Done</p>
-                  </div>
-                  <div>
-                    <h4 className="font-display text-3xl text-white mb-2">15+</h4>
-                    <p className="text-xs uppercase tracking-widest text-white/40">Glorious Years</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </SectionWrapper>
-
-        {/* SERVICES SECTION */}
-        <SectionWrapper id="services" className="py-48 px-6 bg-white/[0.01] backdrop-blur-sm relative border-y border-white/5">
-          <div className="container mx-auto">
-            <div className="flex flex-col md:flex-row md:items-end justify-between mb-24 gap-8">
-              <div className="max-w-2xl">
-                <span className="text-primary text-sm font-bold uppercase tracking-[0.3em] mb-4 block">Our Expertise</span>
-                <h2 className="font-display text-5xl md:text-7xl tracking-tighter">Engineered for Scale</h2>
-              </div>
-              <p className="text-white/40 max-w-xs text-sm uppercase tracking-widest leading-loose">
-                Comprehensive digital services tailored to your business needs.
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-1px bg-white/10 border border-white/10 rounded-2xl overflow-hidden">
-              {[
-                {
-                  icon: Globe,
-                  title: "Web Designing",
-                  desc: "Craft stunning, user-friendly websites that captivate and convert.",
-                  micro: "High-performance architecture."
-                },
-                {
-                  icon: Zap,
-                  title: "Pay Per Click",
-                  desc: "Maximize your ROI with expertly managed pay-per-click campaigns.",
-                  micro: "Data-driven growth."
-                },
-                {
-                  icon: Shield,
-                  title: "SEO Mastery",
-                  desc: "Enhance your online presence with comprehensive SEO strategies.",
-                  micro: "Get found on the 1st page."
-                }
-              ].map((service, index) => (
-                <div
-                  key={index}
-                  className="group p-12 bg-background hover:bg-white/[0.03] transition-all duration-700"
-                >
-                  <div className="w-16 h-16 rounded-xl bg-primary/10 flex items-center justify-center mb-10 text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-700">
-                    <service.icon className="w-8 h-8" />
-                  </div>
-                  <h3 className="text-2xl font-bold mb-6 font-display tracking-tight text-white">{service.title}</h3>
-                  <p className="text-white/60 leading-relaxed font-light mb-8 text-lg">{service.desc}</p>
-                  <p className="text-primary/60 text-xs uppercase tracking-widest font-bold">{service.micro}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </SectionWrapper>
-
-        {/* STRATEGY BLOCK */}
-        <SectionWrapper className="py-48 px-6 border-b border-white/5">
-          <div className="container mx-auto">
-            <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-24 items-center">
-               <div className="order-2 md:order-1">
-                 <h2 className="font-display text-4xl md:text-5xl mb-8 tracking-tight text-white">Why Choose Our Agency?</h2>
-                 <ul className="space-y-12">
-                   {[
-                     { step: "01", title: "Proven Results", desc: "Measurable success driving brands to the top of search rankings." },
-                     { step: "02", title: "Strategic Approach", desc: "Ensuring your brand stays ahead in the dynamic digital landscape." },
-                     { step: "03", title: "Comprehensive Services", desc: "Tailored to meet the unique needs of your business." }
-                   ].map((item, i) => (
-                     <li key={i} className="flex gap-8">
-                       <span className="font-display text-primary text-xl font-bold">{item.step}</span>
-                       <div>
-                         <h4 className="text-lg font-bold mb-2 uppercase tracking-widest text-white">{item.title}</h4>
-                         <p className="text-white/50 font-light">{item.desc}</p>
-                       </div>
-                     </li>
-                   ))}
-                 </ul>
-               </div>
-               <div className="order-1 md:order-2 aspect-square rounded-full border border-primary/10 flex items-center justify-center relative">
-                 <div className="absolute inset-0 bg-primary/5 blur-[120px] rounded-full" />
-                 <Landmark className="w-32 h-32 text-primary/20 animate-pulse" />
-                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[1px] bg-white/10 rotate-45" />
-                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[1px] bg-white/10 -rotate-45" />
-               </div>
-            </div>
-          </div>
-        </SectionWrapper>
-
-        {/* WORK SECTION */}
-        <SectionWrapper id="work" className="py-48 px-6">
-          <div className="container mx-auto">
-            <div className="flex flex-col items-center text-center mb-24">
-              <span className="text-primary text-sm font-bold uppercase tracking-[0.4em] mb-4">Portfolio</span>
-              <h2 className="font-display text-5xl md:text-7xl tracking-tighter mb-8 text-white">Our Masterpieces</h2>
-              <p className="text-white/50 max-w-xl font-light text-lg">
-                Experience measurable success with our proven track record.
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
-              {[
-                {
-                  url: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=1200&q=80",
-                  title: "Elite Web Redesign",
-                  cat: "Web Design",
-                  desc: "Crafting a stunning digital portal."
-                },
-                {
-                  url: "https://images.unsplash.com/photo-1550684848-fac1c5b4e853?w=1200&q=80",
-                  title: "Global Growth Strategy",
-                  cat: "Digital Marketing",
-                  desc: "Data-driven social media expansion."
-                }
-              ].map((work, idx) => (
-                <motion.div
-                  key={idx}
-                  whileHover={{ y: -10 }}
-                  className="group relative cursor-pointer"
-                >
-                  <div className="relative aspect-[16/10] overflow-hidden rounded-2xl border border-white/10">
-                    <div className="absolute inset-0 bg-primary/5 group-hover:bg-transparent transition-all duration-700 z-10" />
-                    <img
-                      src={work.url}
-                      alt={work.title}
-                      className="w-full h-full object-cover grayscale opacity-80 group-hover:grayscale-0 group-hover:scale-105 group-hover:opacity-100 transition-all duration-1000"
-                    />
-                    <div className="absolute top-8 right-8 z-20">
-                      <div className="bg-background/80 backdrop-blur-md border border-white/10 p-4 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-                        <ArrowRight className="w-5 h-5 text-primary" />
-                      </div>
-                    </div>
-                  </div>
-                  <div className="mt-8">
-                    <p className="text-primary text-xs font-bold uppercase tracking-[0.3em] mb-2">{work.cat}</p>
-                    <h3 className="text-3xl font-display font-bold tracking-tight mb-3 text-white">{work.title}</h3>
-                    <p className="text-white/40 font-light">{work.desc}</p>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </SectionWrapper>
-
-        {/* TRUST SECTION */}
-        <SectionWrapper className="py-24 border-y border-white/5 bg-white/[0.01]">
-          <div className="container mx-auto px-6">
-             <div className="flex flex-wrap justify-center items-center gap-16 md:gap-32 opacity-30 grayscale hover:opacity-100 transition-opacity duration-700 text-primary">
-                < LandMarkIcon className="w-12 h-12" />
-                < Award className="w-12 h-12" />
-                < Shield className="w-12 h-12" />
-                < Globe className="w-12 h-12" />
-                < Zap className="w-12 h-12" />
-             </div>
-          </div>
-        </SectionWrapper>
-
-        {/* CONTACT SECTION */}
-        <section id="contact" className="py-48 px-6 relative">
-          <div className="container mx-auto max-w-5xl">
-            <div className="bg-white/[0.02] backdrop-blur-3xl border border-white/10 rounded-[3rem] p-12 md:p-24 shadow-2xl relative overflow-hidden">
-              <div className="absolute top-0 right-0 w-96 h-96 bg-primary/5 blur-[150px] -mr-48 -mt-48" />
-              <div className="relative z-10">
-                <div className="text-center mb-16">
-                  <span className="text-primary text-sm font-bold uppercase tracking-[0.4em] mb-4 block text-primary">Get in Touch</span>
-                  <h2 className="font-display text-5xl md:text-7xl mb-6 tracking-tighter text-white">Schedule a Call</h2>
-                  <p className="text-white/50 text-xl font-light max-w-2xl mx-auto">
-                    Ready to supercharge your digital presence? Let's talk.
-                  </p>
-                </div>
-
-                <Form {...form}>
-                  <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                      <FormField
-                        control={form.control}
-                        name="name"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="text-white/60 uppercase tracking-widest text-xs font-bold">Full Name</FormLabel>
-                            <FormControl>
-                              <Input 
-                                placeholder="YOUR NAME" 
-                                className="bg-white/[0.03] border-white/10 focus:border-primary/50 h-16 rounded-xl text-white placeholder:text-white/10 text-lg tracking-wide px-6" 
-                                {...field} 
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name="email"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="text-white/60 uppercase tracking-widest text-xs font-bold">Email Address</FormLabel>
-                            <FormControl>
-                              <Input 
-                                placeholder="EMAIL@EXAMPLE.COM" 
-                                className="bg-white/[0.03] border-white/10 focus:border-primary/50 h-16 rounded-xl text-white placeholder:text-white/10 text-lg tracking-wide px-6" 
-                                {...field} 
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                    
-                    <FormField
-                      control={form.control}
-                      name="message"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-white/60 uppercase tracking-widest text-xs font-bold">Project Details</FormLabel>
-                          <FormControl>
-                            <Textarea 
-                              placeholder="TELL US ABOUT YOUR PROJECT..." 
-                              className="bg-white/[0.03] border-white/10 focus:border-primary/50 min-h-[200px] rounded-xl text-white placeholder:text-white/10 text-lg tracking-wide px-6 py-6 resize-none" 
-                              {...field} 
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <Button 
-                      type="submit" 
-                      disabled={createInquiry.isPending}
-                      className="w-full h-20 rounded-xl bg-primary text-primary-foreground hover:bg-white hover:text-black text-xl font-bold tracking-[0.2em] uppercase transition-all duration-700 shadow-2xl shadow-primary/20"
-                    >
-                      {createInquiry.isPending ? "PROCESSSING..." : "SCHEDULE NOW"}
-                    </Button>
-                  </form>
-                </Form>
-              </div>
-            </div>
-          </div>
-        </section>
-      </main>
-
-      <Footer />
+    <div ref={ref} className={`overflow-hidden ${className}`}>
+      <motion.div style={{ y }} className="h-full w-full">{children}</motion.div>
     </div>
   );
 }
 
-function LandMarkIcon(props: any) {
+function ScrollReveal3D({ children, className = "", delayOffset = 0 }: { children: React.ReactNode, className?: string, delayOffset?: number }) {
+  const ref = useRef(null);
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start 90%", "end 60%"] });
+
+  const opacity = useTransform(scrollYProgress, [0, 0.3], [0, 1]);
+  const rotateX = useTransform(scrollYProgress, [0, 0.4], [90, 0]);
+  const scale = useTransform(scrollYProgress, [0, 0.4], [0.8, 1]);
+  const y = useTransform(scrollYProgress, [0, 0.4], [100, 0]);
+
   return (
-    <svg 
-      {...props} 
-      xmlns="http://www.w3.org/2000/svg" 
-      width="24" 
-      height="24" 
-      viewBox="0 0 24 24" 
-      fill="none" 
-      stroke="currentColor" 
-      strokeWidth="2" 
-      strokeLinecap="round" 
-      strokeLinejoin="round"
-    >
-      <line x1="3" y1="22" x2="21" y2="22" />
-      <line x1="6" y1="18" x2="6" y2="11" />
-      <line x1="10" y1="18" x2="10" y2="11" />
-      <line x1="14" y1="18" x2="14" y2="11" />
-      <line x1="18" y1="18" x2="18" y2="11" />
-      <polygon points="12 2 20 7 4 7" />
-    </svg>
+    <div className={`perspective-1000 ${className}`}>
+      <motion.div ref={ref} style={{ opacity, rotateX, scale, y }} className="will-change-transform origin-bottom">
+        {children}
+      </motion.div>
+    </div>
   );
 }
 
+function ImageZoomScroll({ src, alt, className = "" }: { src: string, alt: string, className?: string }) {
+  const ref = useRef(null);
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
+  const scale = useTransform(scrollYProgress, [0, 1], [1, 1.25]);
+
+  return (
+    <div ref={ref} className={`overflow-hidden ${className}`}>
+      <motion.img src={src} alt={alt} style={{ scale }} className="w-full h-full object-cover will-change-transform" />
+    </div>
+  );
+}
+
+function TiltCard({ children, className = "" }: { children: React.ReactNode, className?: string }) {
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
+
+  const mouseX = useSpring(x, { stiffness: 500, damping: 100 });
+  const mouseY = useSpring(y, { stiffness: 500, damping: 100 });
+
+  const rotateX = useTransform(mouseY, [-0.5, 0.5], ["15deg", "-15deg"]);
+  const rotateY = useTransform(mouseX, [-0.5, 0.5], ["-15deg", "15deg"]);
+
+  function handleMouseMove(e: MouseEvent<HTMLDivElement>) {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const width = rect.width;
+    const height = rect.height;
+    const mouseXFromCenter = e.clientX - rect.left - width / 2;
+    const mouseYFromCenter = e.clientY - rect.top - height / 2;
+    x.set(mouseXFromCenter / width);
+    y.set(mouseYFromCenter / height);
+  }
+
+  function handleMouseLeave() {
+    x.set(0);
+    y.set(0);
+  }
+
+  return (
+    <motion.div
+      style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      className={`relative will-change-transform perspective-1000 ${className}`}
+    >
+      <div style={{ transform: "translateZ(30px)" }}>{children}</div>
+    </motion.div>
+  );
+}
+
+// --- Main Page Component ---
+
+export default function Home() {
+  const [theme, setTheme] = useState<'dark' | 'light'>('dark');
+  const { scrollY } = useScroll();
+
+  const heroTextY = useTransform(scrollY, [0, 1000], [0, 300]);
+  const heroOpacity = useTransform(scrollY, [0, 600], [1, 0]);
+
+  const toggleTheme = () => {
+    setTheme(prev => prev === 'dark' ? 'light' : 'dark');
+  };
+
+  // Dynamic Styles based on Theme
+  // Dark: #0E1621 (Main BG), White (Text)
+  // Light: #F8FAFC (Main BG), Slate-900 (Text)
+
+  const bgMain = theme === 'dark' ? 'bg-[#0E1621]' : 'bg-[#F8FAFC]';
+  const textMain = theme === 'dark' ? 'text-white' : 'text-slate-900';
+  const textMuted = theme === 'dark' ? 'text-[#B6C7D6]' : 'text-slate-600';
+  const gradientOverlay = theme === 'dark'
+    ? 'from-[#0E1621] via-transparent to-transparent'
+    : 'from-[#F8FAFC] via-transparent to-transparent';
+
+  const cardBg = theme === 'dark'
+    ? 'bg-[#111A29]/80 border-white/10'
+    : 'bg-white/80 border-slate-200 shadow-xl';
+
+  const sectionBg = theme === 'dark'
+    ? 'bg-[#0E1621]/50'
+    : 'bg-slate-50';
+
+  return (
+    <div className={`min-h-screen ${bgMain} ${textMain} selection:bg-[#4FA3FF] selection:text-white overflow-x-hidden font-body transition-colors duration-500`}>
+      <Navigation theme={theme} toggleTheme={toggleTheme} />
+
+      {/* GLOBAL 3D BACKGROUND (FIXED) */}
+      <div className={`fixed inset-0 z-0 pointer-events-none ${theme === 'dark' ? 'opacity-40' : 'opacity-80'}`}>
+        <ThreeBackground theme={theme} />
+      </div>
+
+      <main className="relative z-10">
+
+        {/* HERO SECTION */}
+        <section className="relative h-screen flex items-center justify-center overflow-hidden">
+          <div className={`absolute inset-0 bg-gradient-to-t ${gradientOverlay} pointer-events-none`} />
+
+          <div className="container mx-auto px-6 relative z-20 text-center pt-20">
+            <motion.div style={{ y: heroTextY, opacity: heroOpacity }}>
+              <ScrollReveal3D>
+                <div className={`inline-block px-4 py-1.5 border rounded-full backdrop-blur-sm mb-8 transition-colors cursor-default ${theme === 'dark' ? 'border-white/20 bg-white/5 hover:bg-white/10' : 'border-slate-300 bg-white/60 hover:bg-white'}`}>
+                  <h2 className={`text-[10px] md:text-xs font-bold uppercase tracking-[0.2em] ${theme === 'dark' ? 'text-white/80' : 'text-slate-600'}`}>
+                    WASHINGTON ADVERT • GLOBAL AGENCY
+                  </h2>
+                </div>
+              </ScrollReveal3D>
+
+              <ScrollReveal3D delayOffset={1}>
+                {/* HEADLINE: Dark mode uses mix-blend-overlay for that transparent text effect. Light mode needs standard dark text. */}
+                <h1 className={`font-display text-5xl md:text-7xl lg:text-9xl font-bold tracking-tight leading-[1] mb-8 ${theme === 'dark' ? 'text-white mix-blend-overlay opacity-90' : 'text-slate-900 opacity-100'}`}>
+                  Authority in <br />
+                  Digital.
+                </h1>
+                <h1 className="font-display text-5xl md:text-7xl lg:text-9xl font-bold tracking-tight leading-[1] mb-8 text-[#4FA3FF]">
+                  Growth.
+                </h1>
+              </ScrollReveal3D>
+
+              <ScrollReveal3D delayOffset={2}>
+                <p className={`text-base md:text-lg ${textMuted} max-w-2xl mx-auto font-light leading-relaxed mb-12`}>
+                  Washington Advert drives enterprise-level performance through data-driven strategy and cinematic creative execution.
+                </p>
+              </ScrollReveal3D>
+
+              <ScrollReveal3D delayOffset={3}>
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+                  <a href="#contact" className="px-10 py-5 bg-[#2563EB] text-white text-sm uppercase tracking-[0.1em] font-bold rounded hover:bg-[#1D4ED8] transition-all duration-300 shadow-[0_0_40px_rgba(37,99,235,0.4)] hover:shadow-[0_0_60px_rgba(37,99,235,0.6)] hover:-translate-y-1">
+                    Start Your Project
+                  </a>
+                  <button className={`px-10 py-5 border text-sm uppercase tracking-[0.1em] font-bold rounded transition-all duration-300 flex items-center gap-2 group backdrop-blur-sm ${theme === 'dark' ? 'border-white/20 text-white hover:bg-white/10' : 'border-slate-300 text-slate-700 hover:bg-slate-100'}`}>
+                    View Showreel
+                  </button>
+                </div>
+              </ScrollReveal3D>
+            </motion.div>
+          </div>
+        </section>
+
+        {/* METRICS SECTION */}
+        <section className="relative z-20 -mt-24 pb-20 px-6 pointer-events-none">
+          <div className="container mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {[
+                { label: "AVERAGE ROI", value: "500%", icon: TrendingUp },
+                { label: "CLIENTS SERVED", value: "200+", icon: Users },
+                { label: "AD SPEND MANAGED", value: "$50M+", icon: DollarSign },
+              ].map((metric, idx) => (
+                <TiltCard key={idx} className={`${cardBg} backdrop-blur-xl p-8 border rounded-sm pointer-events-auto h-full hover:border-[#2563EB]/50 transition-colors`}>
+                  <div className="flex justify-between items-start mb-4">
+                    <span className="text-[10px] uppercase tracking-[0.2em] text-slate-400">{metric.label}</span>
+                    <metric.icon className="w-5 h-5 text-[#2563EB]" />
+                  </div>
+                  <p className={`text-4xl md:text-5xl font-display font-bold mb-2 ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>{metric.value}</p>
+                  <div className={`w-full h-0.5 mt-6 relative overflow-hidden rounded-full ${theme === 'dark' ? 'bg-white/5' : 'bg-slate-200'}`}>
+                    <div className="absolute top-0 left-0 h-full bg-[#2563EB] w-1/3 animate-pulse"></div>
+                  </div>
+                </TiltCard>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* PHILOSOPHY SECTION */}
+        <section id="about" className="py-24 px-6 relative z-10">
+          <div className="container mx-auto">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+              <div className="relative order-2 lg:order-1">
+                <ScrollParallax speed={0.2}>
+                  <div className="aspect-[4/3] overflow-hidden rounded-sm relative shadow-2xl shadow-[#2563EB]/10">
+                    <ImageZoomScroll
+                      src="https://images.unsplash.com/photo-1497366216548-37526070297c?w=1200&q=80"
+                      alt="Modern Office"
+                      className="w-full h-full opacity-90 hover:opacity-100 transition-opacity duration-700"
+                    />
+                  </div>
+                </ScrollParallax>
+              </div>
+
+              <div className="order-1 lg:order-2">
+                <ScrollReveal3D>
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="h-[2px] w-12 bg-[#2563EB]"></div>
+                    <span className="text-[#2563EB] text-xs font-bold uppercase tracking-[0.2em]">Our Philosophy</span>
+                  </div>
+                </ScrollReveal3D>
+
+                <ScrollReveal3D delayOffset={1}>
+                  <h2 className={`font-display text-5xl md:text-6xl mb-8 leading-tight ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>
+                    Built on Trust.<br />
+                    <span className="text-[#4b5563] text-4xl md:text-5xl">Defined by Results.</span>
+                  </h2>
+                </ScrollReveal3D>
+
+                <ScrollReveal3D delayOffset={2}>
+                  <blockquote className={`border-l-4 border-[#2563EB] pl-6 italic text-xl mb-8 font-light leading-relaxed ${theme === 'dark' ? 'text-[#94A3B8]' : 'text-slate-600'}`}>
+                    "Strategy is the art of sacrifice. We focus on long-term brand building rather than short-term hacks."
+                  </blockquote>
+                </ScrollReveal3D>
+
+                <ScrollReveal3D delayOffset={3}>
+                  <p className={`${theme === 'dark' ? 'text-[#64748B]' : 'text-slate-500'} leading-relaxed font-light mb-8 text-lg`}>
+                    In a world of noise, clarity is power. We partner with ambitious brands to cut through the clutter using precision data and compelling narratives.
+                  </p>
+                  <a href="#" className={`inline-flex items-center gap-2 text-[#2563EB] text-sm font-bold uppercase tracking-[0.1em] hover:text-[#1D4ED8] transition-colors group`}>
+                    Read Our Full Story <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+                  </a>
+                </ScrollReveal3D>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* CORE CAPABILITIES SECTION */}
+        <section id="services" className={`py-24 px-6 relative z-10 backdrop-blur-sm ${sectionBg}`}>
+          <div className="container mx-auto content-center">
+            <div className="text-center max-w-3xl mx-auto mb-20">
+              <ScrollReveal3D>
+                <h2 className={`font-display text-4xl md:text-6xl mb-6 ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>Core Capabilities</h2>
+                <p className={`${theme === 'dark' ? 'text-[#94A3B8]' : 'text-slate-500'} font-light text-xl`}>
+                  Comprehensive digital solutions designed to scale enterprise growth.
+                </p>
+              </ScrollReveal3D>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {[
+                { title: "Performance Marketing", icon: Rocket, desc: "Data-driven strategies that optimize machine learning to maximize ROAS." },
+                { title: "Brand Strategy", icon: Shield, desc: "Long-term positioning that defines your market authority and builds customer loyalty." },
+                { title: "Creative Design", icon: PenTool, desc: "Cinema-grade content and UI/UX design that captivates audiences and drives conversions." },
+                { title: "Data Analytics", icon: BarChart3, desc: "Real-time optimization and deep-dive insights to understand the 'why' behind the data." },
+              ].map((service, idx) => (
+                <ScrollReveal3D key={idx} delayOffset={idx} className="h-full">
+                  <TiltCard className={`group h-full p-8 rounded-sm hover:bg-[#2563EB] transition-all duration-500 cursor-default border hover:-translate-y-2 hover:shadow-2xl hover:shadow-[#2563EB]/20 ${theme === 'dark' ? 'bg-[#1A2639] border-white/5 hover:border-white/20' : 'bg-white border-slate-200 shadow-sm'}`}>
+                    <div className={`w-14 h-14 rounded-xl flex items-center justify-center mb-8 text-[#2563EB] group-hover:bg-white/20 group-hover:text-white transition-colors backdrop-blur-sm ${theme === 'dark' ? 'bg-[#2563EB]/10' : 'bg-[#EFF6FF]'}`}>
+                      <service.icon className="w-7 h-7" />
+                    </div>
+                    <h3 className={`text-2xl font-display font-bold mb-4 group-hover:text-white ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>{service.title}</h3>
+                    <p className={`text-sm leading-relaxed group-hover:text-white/80 ${theme === 'dark' ? 'text-[#94A3B8]' : 'text-slate-500'}`}>{service.desc}</p>
+                  </TiltCard>
+                </ScrollReveal3D>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* BLUEPRINT SECTION - STYLIZED */}
+        <section className="py-32 px-6 relative z-10 overflow-hidden">
+          {/* Decorative BG element */}
+          <div className="absolute right-0 top-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-[#2563EB]/10 blur-[150px] rounded-full pointer-events-none"></div>
+
+          <div className="container mx-auto">
+            <ScrollReveal3D>
+              <h2 className={`font-display text-4xl md:text-5xl mb-4 ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>The Blueprint</h2>
+              <p className={`${theme === 'dark' ? 'text-[#94A3B8]' : 'text-slate-500'} font-light mb-20 text-lg`}>A systematic approach to predictable success.</p>
+            </ScrollReveal3D>
+
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-8 relative">
+              <div className={`hidden md:block absolute top-[28px] left-0 w-full h-[1px] bg-gradient-to-r via-white/20 z-0 ${theme === 'dark' ? 'from-transparent to-transparent' : 'from-transparent to-transparent via-slate-300'}`}></div>
+
+              {[
+                { step: "01", title: "Research & Strategy", desc: "Deep dive market analysis and competitor auditing." },
+                { step: "02", title: "Experience Design", desc: "Crafting the visual and interactive assets." },
+                { step: "03", title: "Performance Marketing", desc: "Launching campaigns across targeted channels." },
+                { step: "04", title: "Scale & Optimize", desc: "Continuous A/B testing and scaling." }
+              ].map((item, idx) => (
+                <ScrollReveal3D key={idx} delayOffset={idx} className="relative z-10">
+                  <div className={`w-14 h-14 rounded-full border-2 border-[#2563EB] flex items-center justify-center font-display font-bold text-xl mb-8 mx-auto md:mx-0 shadow-[0_0_20px_rgba(37,99,235,0.3)] ${theme === 'dark' ? 'bg-[#0E1621] text-white' : 'bg-white text-slate-900'}`}>
+                    {item.step}
+                  </div>
+                  <h3 className={`text-xl font-bold mb-4 ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>{item.title}</h3>
+                  <p className={`text-sm leading-relaxed ${theme === 'dark' ? 'text-[#64748B]' : 'text-slate-500'}`}>{item.desc}</p>
+                </ScrollReveal3D>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* TESTIMONIALS SECTION - 3D CARDS */}
+        <section className={`py-24 px-6 relative z-10 ${theme === 'dark' ? 'bg-[#0B121B]' : 'bg-slate-100'}`}>
+          <div className="container mx-auto">
+            <ScrollReveal3D>
+              <h2 className={`font-display text-4xl md:text-5xl mb-16 text-center ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>Client Perspectives</h2>
+            </ScrollReveal3D>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+              {[
+                { quote: "Washington Advert completely redefined our digital presence. Their strategic approach drove a 200% increase in qualified leads within the first quarter.", author: "Sarah Jenkins", role: "CMO, TechFlow" },
+                { quote: "The level of creativity and data sophistication is unmatched. They don't just execute campaigns; they engineer growth engines.", author: "Michael Chang", role: "Director of Growth, FinScale" }
+              ].map((item, idx) => (
+                <ScrollReveal3D key={idx} delayOffset={idx}>
+                  <TiltCard className={`p-12 rounded-sm border relative h-full transition-all ${theme === 'dark' ? 'bg-[#1A2639]/50 backdrop-blur-md border-white/5 hover:border-[#2563EB]/30 hover:bg-[#1A2639]' : 'bg-white shadow-xl hover:shadow-2xl border-transparent'}`}>
+                    <Quote className="w-12 h-12 text-[#2563EB] mb-8 opacity-50" />
+                    <p className={`text-xl md:text-2xl font-light leading-relaxed mb-10 italic ${theme === 'dark' ? 'text-[#E2E8F0]' : 'text-slate-600'}`}>"{item.quote}"</p>
+                    <div className="mt-auto flex items-center gap-4">
+                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#2563EB] to-purple-600"></div>
+                      <div>
+                        <p className={`font-bold text-lg ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>{item.author}</p>
+                        <p className={`text-xs font-bold uppercase tracking-widest ${theme === 'dark' ? 'text-[#64748B]' : 'text-slate-400'}`}>{item.role}</p>
+                      </div>
+                    </div>
+                  </TiltCard>
+                </ScrollReveal3D>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* CTA SECTION - Always Dark/Black for Impact */}
+        <section id="contact" className="relative py-40 px-6 overflow-hidden bg-black text-white text-center z-10">
+          <div className="absolute inset-0 bg-[#2563EB]/10 blur-[120px] pointer-events-none"></div>
+
+          <div className="container mx-auto relative z-10 max-w-4xl">
+            <ScrollReveal3D>
+              <h2 className="font-display text-5xl md:text-7xl font-bold mb-8">Ready to Scale?</h2>
+            </ScrollReveal3D>
+            <ScrollReveal3D delayOffset={1}>
+              <p className="text-[#94A3B8] text-xl font-light mb-12">
+                Join forward-thinking companies that trust us to deliver exceptional growth.
+              </p>
+            </ScrollReveal3D>
+
+            <ScrollReveal3D delayOffset={2}>
+              <div className="flex flex-col sm:flex-row justify-center gap-6">
+                <button className="px-12 py-6 bg-[#2563EB] text-white font-bold uppercase tracking-[0.1em] rounded shadow-[0_0_30px_rgba(37,99,235,0.4)] hover:bg-[#1D4ED8] hover:scale-105 transition-all duration-300">
+                  Start Your Project
+                </button>
+              </div>
+            </ScrollReveal3D>
+          </div>
+        </section>
+
+      </main>
+      <Footer />
+    </div>
+  );
+}
